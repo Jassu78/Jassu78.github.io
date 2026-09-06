@@ -90,6 +90,15 @@ export function ThemeLauncher({ open, onOpenChange }: Props) {
   const baseline = useRef<ThemeId>(theme);
   const [cursor, setCursor] = useState(0);
   const [hint, setHint] = useState(false);
+  const [narrow, setNarrow] = useState(false);
+
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 640px)");
+    const sync = () => setNarrow(mq.matches);
+    sync();
+    mq.addEventListener("change", sync);
+    return () => mq.removeEventListener("change", sync);
+  }, []);
 
   const close = useCallback(
     (restore: boolean) => {
@@ -266,7 +275,7 @@ export function ThemeLauncher({ open, onOpenChange }: Props) {
                   </header>
 
                   <div
-                    className={`coverflow${reduce ? " coverflow--flat" : ""}`}
+                    className={`coverflow${reduce || narrow ? " coverflow--flat" : ""}`}
                     aria-roledescription="carousel"
                     aria-label="Theme coverflow"
                   >
@@ -275,10 +284,19 @@ export function ThemeLauncher({ open, onOpenChange }: Props) {
                         const offset = offsetFrom(cursor, i, THEMES.length);
                         const active = offset === 0;
                         const abs = Math.abs(offset);
-                        const rotateY = reduce ? 0 : offset * -42;
-                        const x = reduce ? offset * 108 : offset * 118;
+                        const flat = reduce || narrow;
+                        const rotateY = flat ? 0 : offset * -42;
+                        const x = flat
+                          ? offset * (narrow ? 78 : 108)
+                          : offset * 118;
                         const scale = active ? 1 : Math.max(0.62, 1 - abs * 0.16);
-                        const opacity = active ? 1 : Math.max(0.35, 1 - abs * 0.28);
+                        const opacity = active
+                          ? 1
+                          : narrow
+                            ? abs > 1
+                              ? 0
+                              : 0.45
+                            : Math.max(0.35, 1 - abs * 0.28);
                         const z = 20 - abs;
 
                         return (

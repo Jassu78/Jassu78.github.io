@@ -48,12 +48,16 @@ export function BentoTile({
     .filter(Boolean)
     .join(" ");
 
+  const cellClass = [
+    "bento__cell",
+    variant === "wide" ? "bento__cell--wide" : "",
+  ]
+    .filter(Boolean)
+    .join(" ");
+
   return (
     <motion.div
-      style={{
-        gridColumn: variant === "wide" ? "span 12" : "span 6",
-        display: "flex",
-      }}
+      className={cellClass}
       initial={reduce ? false : { opacity: 0, y: 18 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-40px" }}
@@ -65,7 +69,6 @@ export function BentoTile({
         to={to}
         className={tileClass}
         onMouseMove={onMove}
-        style={{ width: "100%", gridColumn: "unset", height: "100%" }}
       >
         <span className="bento__glow" aria-hidden />
         <div>

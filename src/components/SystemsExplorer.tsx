@@ -14,7 +14,13 @@ const kindLabel: Record<FlowNode["kind"], string> = {
   eval: "Eval",
 };
 
-function FlowBoard({ flow }: { flow: SystemFlow }) {
+function FlowBoard({
+  flow,
+  showCaseLink = true,
+}: {
+  flow: SystemFlow;
+  showCaseLink?: boolean;
+}) {
   const [activeId, setActiveId] = useState(flow.nodes[0]?.id ?? "");
   const reduce = useReducedMotion();
   const active = useMemo(
@@ -79,7 +85,7 @@ function FlowBoard({ flow }: { flow: SystemFlow }) {
               {kindLabel[active.kind]} · {active.label}
             </p>
             <p>{active.detail}</p>
-            {flow.caseSlug ? (
+            {showCaseLink && flow.caseSlug ? (
               <Link to={`/projects/${flow.caseSlug}`} className="flow__case">
                 Project details →
               </Link>
@@ -141,14 +147,14 @@ export function SystemsExplorer({ maxFlows, caseSlug }: Props) {
         <div className="flow-panel" role="tabpanel">
           <h3 className="flow-panel__title">{activeFlow.title}</h3>
           <p className="flow-panel__sub">{activeFlow.subtitle}</p>
-          <FlowBoard flow={activeFlow} />
+          <FlowBoard flow={activeFlow} showCaseLink={!caseSlug} />
         </div>
       ) : null}
     </div>
   );
 }
 
-const SLIDE_MS = 4500;
+const SLIDE_MS = 2800;
 
 const SHORT: Record<string, string> = {
   "companion-loop": "Companion",
@@ -174,7 +180,7 @@ const HERO_LINE: Record<string, string> = {
 
 /**
  * Stacked cards (wallet-style): solid faces, small x/y peeks, no 3D rotate.
- * Front card is in-flow (height tracks copy); peeks stretch to match.
+ * Front card / arrows advance the stack; only Details navigates.
  */
 export function SystemsHeroPreview() {
   const flows = systemFlows.slice(0, 3);
@@ -192,6 +198,9 @@ export function SystemsHeroPreview() {
 
   const go = (i: number) =>
     setIndex(((i % flows.length) + flows.length) % flows.length);
+
+  const next = () => go(index + 1);
+  const prev = () => go(index - 1);
 
   const front = flows[index]!;
   const href = front.caseSlug ? `/projects/${front.caseSlug}` : "/projects";
@@ -215,13 +224,11 @@ export function SystemsHeroPreview() {
           const flow = flows[flowIndex]!;
 
           return (
-            <button
+            <div
               key={`back-${depth}-${flow.id}`}
-              type="button"
               className={`card-stack__card card-stack__card--back card-stack__card--d${depth}`}
               style={{ zIndex: 3 - depth }}
-              aria-label={`Show ${SHORT[flow.id] ?? flow.title}`}
-              onClick={() => go(flowIndex)}
+              aria-hidden
             />
           );
         })}
@@ -233,28 +240,51 @@ export function SystemsHeroPreview() {
           initial={reduce ? false : { opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0, x: 0, scale: 1 }}
           transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
+          onClick={next}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              next();
+            }
+          }}
+          role="button"
+          tabIndex={0}
+          aria-label={`${SHORT[front.id] ?? front.title}. Activate for next system.`}
         >
           <p className="card-stack__kicker">{front.caseSlug ? "Project" : "System"}</p>
           <h3 className="card-stack__title">{SHORT[front.id] ?? front.title}</h3>
           <p className="card-stack__line">{line}</p>
-          <Link to={href} className="card-stack__link">
+          <Link
+            to={href}
+            className="card-stack__link"
+            onClick={(e) => e.stopPropagation()}
+            onKeyDown={(e) => e.stopPropagation()}
+          >
             Details →
           </Link>
         </motion.article>
       </div>
 
-      <div className="card-stack__dots" role="tablist" aria-label="Slides">
-        {flows.map((flow, i) => (
-          <button
-            key={flow.id}
-            type="button"
-            role="tab"
-            aria-selected={i === index}
-            aria-label={SHORT[flow.id] ?? flow.title}
-            className={`card-stack__dot${i === index ? " is-active" : ""}`}
-            onClick={() => go(i)}
-          />
-        ))}
+      <div className="card-stack__controls">
+        <button
+          type="button"
+          className="card-stack__hit"
+          aria-label="Previous system"
+          onClick={prev}
+        >
+          <span aria-hidden>‹</span>
+        </button>
+        <p className="card-stack__status" aria-live="polite">
+          {index + 1} / {flows.length}
+        </p>
+        <button
+          type="button"
+          className="card-stack__hit"
+          aria-label="Next system"
+          onClick={next}
+        >
+          <span aria-hidden>›</span>
+        </button>
       </div>
     </div>
   );

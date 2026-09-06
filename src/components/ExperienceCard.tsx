@@ -91,10 +91,24 @@ export function ExperienceCard({ job, compact = false, defaultOpen = false }: Pr
         </button>
       ) : null}
 
-      {compact && hasDetail ? (
-        <Link to="/work" className="exp-card__more">
-          Full experience →
-        </Link>
+      {compact ? (
+        <div className="exp-card__compact-actions">
+          {highlights.length || metrics.length > 2 ? (
+            <button
+              type="button"
+              className="exp-card__toggle exp-card__toggle--mobile"
+              aria-expanded={open}
+              onClick={() => setOpen((v) => !v)}
+            >
+              {open ? "Show less" : "Show more"}
+            </button>
+          ) : null}
+          {hasDetail ? (
+            <Link to="/work" className="exp-card__more">
+              Full experience →
+            </Link>
+          ) : null}
+        </div>
       ) : null}
 
       <AnimatePresence initial={false}>

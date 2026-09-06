@@ -26,12 +26,22 @@ export function Layout() {
     return () => window.removeEventListener("craftlab:theme-launcher", onCustom);
   }, []);
 
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setOpen(false);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [open]);
+
   return (
     <div className="site">
       <header className="nav">
         <div className="shell nav__inner">
           <NavLink to="/" className="nav__brand" onClick={() => setOpen(false)}>
-            {person.name}
+            <span className="nav__brand-full">{person.name}</span>
+            <span className="nav__brand-short">JJ</span>
           </NavLink>
 
           <ul id="primary-nav" className={`nav__links${open ? " open" : ""}`}>
@@ -55,16 +65,30 @@ export function Layout() {
             <ThemeSwitcher onOpenLauncher={() => setThemeOpen(true)} />
             <button
               type="button"
-              className="nav__toggle"
+              className={`nav__toggle${open ? " is-open" : ""}`}
               aria-expanded={open}
               aria-controls="primary-nav"
+              aria-label={open ? "Close menu" : "Open menu"}
               onClick={() => setOpen((v) => !v)}
             >
-              Menu
+              <span className="nav__burger" aria-hidden>
+                <i />
+                <i />
+                <i />
+              </span>
             </button>
           </div>
         </div>
       </header>
+
+      {open ? (
+        <button
+          type="button"
+          className="nav__scrim"
+          aria-label="Close menu"
+          onClick={() => setOpen(false)}
+        />
+      ) : null}
 
       <main className="site__main">
         <Outlet />
