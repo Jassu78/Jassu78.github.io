@@ -1,0 +1,163 @@
+/* Architecture board — follows active rice theme */
+
+.arch-board {
+  --arch-bg: var(--bg-elevated);
+  --arch-border: var(--line-strong);
+  --arch-title: var(--accent);
+  --arch-node-bg: var(--bg-tile);
+  --arch-node-border: var(--line);
+  --arch-text: var(--text);
+  --arch-muted: var(--muted);
+  --arch-arrow: var(--accent-2);
+  margin: 0;
+  padding: 1.1rem 1.15rem 1.25rem;
+  border-radius: 12px;
+  border: 1px solid var(--arch-border);
+  background: var(--arch-bg);
+}
+
+.arch-board__caption {
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--arch-title);
+  margin: 0 0 0.9rem;
+}
+
+.arch-board__lanes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  align-items: stretch;
+}
+
+.arch-board__lane {
+  position: relative;
+  flex: 1 1 140px;
+  min-width: 120px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.arch-board__lane-title {
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 0.68rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--arch-muted);
+}
+
+.arch-board__nodes {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  flex: 1;
+}
+
+.arch-board__node {
+  padding: 0.65rem 0.7rem;
+  border-radius: 10px;
+  border: 1px solid var(--arch-node-border);
+  background: var(--arch-node-bg);
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.arch-board__node strong {
+  font-size: 0.86rem;
+  font-weight: 600;
+  color: var(--arch-text);
+}
+
+.arch-board__node span {
+  font-size: 0.75rem;
+  color: var(--arch-muted);
+  line-height: 1.35;
+}
+
+.arch-board__arrow {
+  display: none;
+}
+
+@media (min-width: 900px) {
+  .arch-board__lanes {
+    flex-wrap: nowrap;
+  }
+
+  .arch-board__lane {
+    flex: 1 1 0;
+    padding-right: 1.4rem;
+  }
+
+  .arch-board__lane:last-child {
+    padding-right: 0;
+  }
+
+  .arch-board__arrow {
+    display: flex;
+    position: absolute;
+    right: 0.15rem;
+    top: 50%;
+    transform: translateY(-20%);
+    color: var(--arch-arrow);
+    font-size: 0.85rem;
+    opacity: 0.85;
+  }
+}
+
+@media (max-width: 899px) {
+  .arch-board__lane + .arch-board__lane::before {
+    content: "↓";
+    display: block;
+    text-align: center;
+    color: var(--arch-arrow);
+    font-size: 0.9rem;
+    margin: -0.15rem 0 0.15rem;
+    opacity: 0.8;
+  }
+}
+
+/* Narrow panes (CLI preview) — always stack; never crush 4 columns */
+.arch-board--stack {
+  padding: 0.9rem 0.95rem 1rem;
+}
+
+.arch-board--stack .arch-board__lanes {
+  flex-direction: column;
+  flex-wrap: nowrap;
+  gap: 0.55rem;
+}
+
+.arch-board--stack .arch-board__lane {
+  flex: none;
+  width: 100%;
+  min-width: 0;
+  padding-right: 0;
+}
+
+.arch-board--stack .arch-board__arrow {
+  display: none;
+}
+
+.arch-board--stack .arch-board__lane + .arch-board__lane::before {
+  content: "↓";
+  display: block;
+  text-align: center;
+  color: var(--arch-arrow);
+  font-size: 0.85rem;
+  margin: 0 0 0.2rem;
+  opacity: 0.8;
+}
+
+.arch-board--stack .arch-board__nodes {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 0.4rem;
+}
+
+.cli-preview .arch-board {
+  flex-shrink: 0;
+}
