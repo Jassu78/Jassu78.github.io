@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
-import { NavLink, Outlet } from "react-router-dom";
+import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { ThemeLauncher } from "./ThemeLauncher";
 import { ThemeSwitcher } from "./ThemeSwitcher";
 import { person } from "../content";
@@ -15,10 +15,22 @@ const links = [
   { to: "/cli", label: "/cli", cli: true },
 ];
 
+function scrollWindowTop() {
+  const html = document.documentElement;
+  const prev = html.style.scrollBehavior;
+  html.style.scrollBehavior = "auto";
+  window.scrollTo(0, 0);
+  document.documentElement.scrollTop = 0;
+  document.body.scrollTop = 0;
+  html.style.scrollBehavior = prev;
+}
+
 export function Layout() {
   const [open, setOpen] = useState(false);
   const [themeOpen, setThemeOpen] = useState(false);
   const { meta } = useTheme();
+  const location = useLocation();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const onCustom = () => setThemeOpen(true);
@@ -35,11 +47,27 @@ export function Layout() {
     return () => window.removeEventListener("keydown", onKey);
   }, [open]);
 
+  const goHomeTop = () => {
+    setOpen(false);
+    if (location.pathname === "/") {
+      scrollWindowTop();
+      return;
+    }
+    navigate("/");
+  };
+
   return (
     <div className="site">
       <header className="nav">
         <div className="shell nav__inner">
-          <NavLink to="/" className="nav__brand" onClick={() => setOpen(false)}>
+          <NavLink
+            to="/"
+            className="nav__brand"
+            onClick={(e) => {
+              e.preventDefault();
+              goHomeTop();
+            }}
+          >
             <span className="nav__brand-full">{person.name}</span>
             <span className="nav__brand-short">JJ</span>
           </NavLink>
