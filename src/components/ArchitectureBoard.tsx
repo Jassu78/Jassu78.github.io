@@ -1,4 +1,5 @@
 import type { ArchLayer } from "../content";
+import "../architecture-board.css";
 
 type Props = {
   layers: ArchLayer[];

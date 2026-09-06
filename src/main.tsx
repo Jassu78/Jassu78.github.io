@@ -4,7 +4,6 @@ import App from "./App";
 import { ThemeProvider } from "./hooks/useTheme";
 import { DEFAULT_THEME, resolveInitialTheme } from "./themes";
 import "./styles.css";
-import "./architecture-board.css";
 
 try {
   document.documentElement.setAttribute("data-theme", resolveInitialTheme());

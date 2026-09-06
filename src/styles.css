@@ -25,7 +25,7 @@ html[data-theme="everforest"],
   --radius: 12px;
   --font-display: "Literata", "Source Serif 4", Georgia, serif;
   --font-body: "Source Sans 3", system-ui, sans-serif;
-  --font-mono: "IBM Plex Mono", "JetBrains Mono", ui-monospace, monospace;
+  --font-mono: "IBM Plex Mono", ui-monospace, monospace;
   --text-size: 1.0625rem;
   --leading: 1.72;
   --leading-tight: 1.35;
